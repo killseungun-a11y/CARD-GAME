@@ -10,8 +10,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
+          node-version: 24
+      - name: Install dependencies
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then npm ci
+          elif [ -f npm-shrinkwrap.json ]; then npm ci
+          else npm install --no-audit --no-fund
+          fi
       - run: npm run build --if-present
       - run: npm test --if-present
