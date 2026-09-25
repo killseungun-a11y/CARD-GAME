@@ -1,0 +1,12 @@
+{
+  "name": "card-rpg-project",
+  "version": "1.0.0",
+  "description": "3-member party roguelike card RPG",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
