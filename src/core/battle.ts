@@ -1,39 +1,44 @@
-export interface CardEffect {
-  type: string;
-  value: number;
-  target?: string;
-}
-
 export interface Card {
   id: string;
   name: string;
   cost: number;
-  type: 'attack' | 'skill' | 'heal';
-  target: string;
-  effects: CardEffect[];
+  type: 'attack' | 'skill' | 'defense';
+  target: 'enemy' | 'self' | 'all';
+  effects: Array<{ type: string; value: number }>;
 }
 
-export interface Combatant {
+export interface Character {
   id: string;
   name: string;
   hp: number;
   maxHp: number;
-  shield: number;
+  ap: number;
 }
 
 export class BattleEngine {
-  constructor(public party: Combatant[], public enemies: Combatant[], public ap: number) {}
+  public party: Character[];
+  public ap: number;
+  public maxAp: number;
 
-  playCard(card: Card, target: Combatant): boolean {
-    if (this.ap < card.cost) return false;
-    this.ap -= card.cost;
-    for (const effect of card.effects) {
-      if (effect.type === 'damage') {
-        target.hp = Math.max(0, target.hp - effect.value);
-      } else if (effect.type === 'heal') {
-        target.hp = Math.min(target.maxHp, target.hp + effect.value);
-      }
+  constructor(party: Character[]) {
+    this.party = party;
+    this.maxAp = 3;
+    this.ap = this.maxAp;
+  }
+
+  public startTurn(): void {
+    this.ap = this.maxAp;
+  }
+
+  public useCard(card: Card): boolean {
+    if (this.ap >= card.cost) {
+      this.ap -= card.cost;
+      return true;
     }
-    return true;
+    return false;
+  }
+
+  public endTurn(): void {
+    // Turn end logic
   }
 }
