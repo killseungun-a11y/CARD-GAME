@@ -1,0 +1,13 @@
+{
+  "name": "chrono-ark-like-card-rpg",
+  "version": "1.0.0",
+  "description": "High difficulty 3-person party rogue-lite card RPG",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
