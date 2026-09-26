@@ -1,44 +1,60 @@
-export interface Card {
-  id: string;
-  name: string;
-  cost: number;
-  type: 'attack' | 'skill' | 'defense';
-  target: 'enemy' | 'self' | 'all';
-  effects: Array<{ type: string; value: number }>;
-}
+import { Card, Character } from '../data/cards';
+import { DeckManager } from './deck';
 
-export interface Character {
-  id: string;
-  name: string;
-  hp: number;
-  maxHp: number;
+export interface BattleState {
+  turn: number;
   ap: number;
+  maxAp: number;
+  party: Character[];
+  enemies: Character[];
+  deckManager: DeckManager;
+  isGameOver: boolean;
+  isVictory: boolean;
 }
 
 export class BattleEngine {
-  public party: Character[];
-  public ap: number;
-  public maxAp: number;
+  private state: BattleState;
 
-  constructor(party: Character[]) {
-    this.party = party;
-    this.maxAp = 3;
-    this.ap = this.maxAp;
+  constructor(party: Character[], enemies: Character[], initialDeck: Card[]) {
+    this.state = {
+      turn: 1,
+      ap: 3,
+      maxAp: 3,
+      party,
+      enemies,
+      deckManager: new DeckManager(initialDeck),
+      isGameOver: false,
+      isVictory: false,
+    };
+    this.state.deckManager.shuffle();
   }
 
   public startTurn(): void {
-    this.ap = this.maxAp;
+    if (this.state.isGameOver || this.state.isVictory) return;
+    this.state.ap = this.state.maxAp;
+    this.state.deckManager.draw(4);
   }
 
-  public useCard(card: Card): boolean {
-    if (this.ap >= card.cost) {
-      this.ap -= card.cost;
-      return true;
-    }
-    return false;
+  public playCard(cardId: string): boolean {
+    const hand = this.state.deckManager.getHand();
+    const cardIndex = hand.findIndex(c => c.id === cardId);
+    if (cardIndex === -1) return false;
+
+    const card = hand[cardIndex];
+    if (this.state.ap < card.cost) return false;
+
+    this.state.ap -= card.cost;
+    this.state.deckManager.playCard(cardId);
+    return true;
   }
 
   public endTurn(): void {
-    // Turn end logic
+    if (this.state.isGameOver || this.state.isVictory) return;
+    this.state.turn++;
+    this.startTurn();
+  }
+
+  public getState(): BattleState {
+    return this.state;
   }
 }
