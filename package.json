@@ -1,9 +1,11 @@
 {
-  "name": "card-rpg-project",
+  "name": "card-roguelike-rpg",
   "version": "1.0.0",
-  "description": "3-member party roguelike card RPG",
-  "main": "index.js",
+  "description": "3-person party high-difficulty roguelike card RPG",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
     "test": "node --test"
   },
   "devDependencies": {
