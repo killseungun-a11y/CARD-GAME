@@ -42,12 +42,13 @@ export function shuffleArray<T>(array: T[]): void {
  * 드로우 파일이 부족할 경우 디스카드 파일을 셔플하여 드로우 파일로 보충합니다.
  */
 export function drawCards(state: DeckState, count: number): CardData[] {
+  if (!state || count <= 0) return [];
   const drawn: CardData[] = [];
 
   for (let i = 0; i < count; i++) {
     if (state.drawPile.length === 0) {
       if (state.discardPile.length === 0) {
-        // 더 이상 드로우할 카드가 없음
+        // 더 이상 드로우할 카드가 없음 (빈 덱 경계조건)
         break;
       }
       // 버린 덱을 다시 뽑을 덱으로 이동 후 셔플
@@ -70,6 +71,7 @@ export function drawCards(state: DeckState, count: number): CardData[] {
  * 손패에 있는 카드를 버림 덱(discardPile)으로 이동합니다.
  */
 export function discardCard(state: DeckState, cardId: string): boolean {
+  if (!state) return false;
   const index = state.hand.findIndex(c => c.id === cardId);
   if (index === -1) return false;
 
@@ -82,6 +84,7 @@ export function discardCard(state: DeckState, cardId: string): boolean {
  * 손패에 있는 카드를 소멸 덱(exhaustPile)으로 이동합니다.
  */
 export function exhaustCard(state: DeckState, cardId: string): boolean {
+  if (!state) return false;
   const index = state.hand.findIndex(c => c.id === cardId);
   if (index === -1) return false;
 
@@ -94,6 +97,7 @@ export function exhaustCard(state: DeckState, cardId: string): boolean {
  * 턴 종료 시 손패의 남은 카드들을 모두 버림 덱으로 보냅니다.
  */
 export function endTurnDiscard(state: DeckState): void {
+  if (!state) return;
   while (state.hand.length > 0) {
     const card = state.hand.pop();
     if (card) {
@@ -121,7 +125,6 @@ export function validateDeckState(state: DeckState): boolean {
     return false;
   }
 
-  // 각 카드가 올바른 id와 캐릭터 소속을 가지는지 검증
   for (const card of allCards) {
     if (!card.id || !card.characterId) {
       return false;
